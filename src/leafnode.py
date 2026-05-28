@@ -6,8 +6,8 @@ from src.htmlnode import HTMLNode
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props = None):
         super().__init__(self)
-        self.value = value
-        self.tag = tag
+        self.value = value or None
+        self.tag = tag or None
         self.props = props or {}
 
     # render a leaf node as an HTML string (return string)
