@@ -1,7 +1,7 @@
 
 import unittest
 
-from lib import extract_markdown_links, split_nodes_delimiter,extract_markdown_image
+from lib import extract_markdown_links, split_nodes_delimiter,extract_markdown_image, split_nodes_image, split_nodes_links
 from textnode import TextNode, TextType
 
 # i don't know why it's failing now
@@ -25,7 +25,7 @@ from textnode import TextNode, TextType
 #             TextNode(" here", TextType.text, None),
 #         ])
 
-class TextExtractMarkdownImage(unittest.TestCase):
+class TestExtractMarkdownImage(unittest.TestCase):
     def test_extract_markdown_images(self):
         matches = extract_markdown_image("This is a text with an ![image](https://i.imgur.com/zhdkgglmeizh.png)")
         self.assertListEqual([("image", "https://i.imgur.com/zhdkgglmeizh.png")], matches)
@@ -38,7 +38,29 @@ class TextExtractMarkdownImage(unittest.TestCase):
             ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
         ], matches)
 
-class TextExtractMarkdownLink(unittest.TestCase):
+class TestExtractMarkdownLink(unittest.TestCase):
     def test_extract_markdown_links(self):
         matches = extract_markdown_links("This is a link of [cat](https://www.image.com/cat)")
         self.assertListEqual([("cat", "https://www.image.com/cat")], matches)
+
+class TextSplitNodesLink(unittest.TestCase):
+    def test_split_nodes_link(self):
+        node = TextNode("This is a text with a link [to my website](https://example.com) and [to my youtube channel](https://youtube.com)", TextType.text)
+        matches = split_nodes_links([node])
+        self.assertListEqual([
+            TextNode("This is a text with a link ", TextType.text),
+            TextNode("to my website", TextType.link, "https://example.com"),
+            TextNode(" and ", TextType.text),
+            TextNode("to my youtube channel", TextType.link, "https://youtube.com")
+        ], matches)
+
+class TextSplitNodesImage(unittest.TestCase):
+    def test_split_image(self):
+        node = TextNode("This is a text with a ![image](https://image.com) and another ![image](https://image2.com)", TextType.text)
+        matches = split_nodes_image([node])
+        self.assertListEqual([
+            TextNode("This is a text with a ", TextType.text),
+            TextNode("image", TextType.image, "https://image.com"),
+            TextNode(" and another ", TextType.text),
+            TextNode("image", TextType.image, "https://image2.com")
+        ], matches)
