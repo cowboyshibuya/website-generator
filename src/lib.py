@@ -93,10 +93,14 @@ def split_nodes_image(old_nodes: list[TextNode]) -> list[TextNode]:
         for image_alt, image_link in images:
             parts = remaining_text.split(f"![{image_alt}]({image_link})", 1)
             #print("parts :", parts)
-            new_nodes.append(TextNode(parts[0], TextType.text))
+            if parts[0]:
+                new_nodes.append(TextNode(parts[0], TextType.text))
+
             new_nodes.append(TextNode(f"{image_alt}", TextType.image, f"{image_link}"))
-            if len(parts) > 1 :
-                remaining_text = parts[1]
+            remaining_text = parts[1]
+
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.text))
     return new_nodes
 
 def split_nodes_links(old_nodes: list[TextNode]) -> list[TextNode]:
@@ -121,15 +125,8 @@ def split_nodes_links(old_nodes: list[TextNode]) -> list[TextNode]:
                 remaining_text = parts[1]
     return new_nodes
 
-    # my old version
-    # if text_type is TextType.text:
-    #     new_list.extend(old_nodes)
-
-    # for node in old_nodes:
-    #     split = node.text.split(delimiter)
-    #     new_list.append(TextNode(split[0], TextType.text))
-    #     new_node = TextNode(split[1], text_type)
-    #     new_list.append(new_node)
-    #     new_list.append(TextNode(split[2], TextType.text))
-
-    # return new_list
+# convert a raw string of markdown text into a list of TextNode objects
+# example : "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+# -> [TextNode("this is ", TextNode.text), TextNode("text", TextType.bold), ...]
+def text_to_textnode(text) :
+    pass

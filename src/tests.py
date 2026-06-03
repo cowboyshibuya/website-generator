@@ -64,3 +64,31 @@ class TextSplitNodesImage(unittest.TestCase):
             TextNode(" and another ", TextType.text),
             TextNode("image", TextType.image, "https://image2.com")
         ], matches)
+
+    def test_split_image_without_image(self):
+        node = TextNode("plain text only", TextType.text)
+        self.assertListEqual(
+            [TextNode("plain text only", TextType.text)],
+            split_nodes_image([node])
+        )
+
+    def test_split_image_at_start(self):
+        node = TextNode("![cat](cat.png) after", TextType.text)
+        self.assertListEqual([
+            TextNode("cat", TextType.image, "cat.png"),
+            TextNode(" after", TextType.text),
+        ], split_nodes_image([node]))
+
+    def test_split_image_at_end(self):
+        node = TextNode("before ![cat](cat.png)", TextType.text)
+        self.assertListEqual([
+            TextNode("before ", TextType.text),
+            TextNode("cat", TextType.image, "cat.png"),
+        ], split_nodes_image([node]))
+
+    def test_preserves_non_text_nodes(self):
+        node = TextNode("already bold text", TextType.bold)
+        self.assertListEqual(
+            [node],
+            split_nodes_image([node])
+        )
