@@ -15,8 +15,6 @@ def extract_markdown_image(text) :
 def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
 
-
-
 def text_node_to_html_node(text_node: TextNode) -> LeafNode:
     type = text_node.text_type
     text = text_node.text
@@ -64,8 +62,8 @@ def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: 
         if len(parts) % 2 == 0:
             raise ValueError("unmatch delimiter : ", delimiter)
 
-        for index, part in enumerate(delimiter):
-            if part == "":
+        for index, part in enumerate(parts):
+            if not part:
                 continue
             if index % 2 == 0:
                 new_nodes.append(TextNode(part, TextType.text))
@@ -119,14 +117,26 @@ def split_nodes_links(old_nodes: list[TextNode]) -> list[TextNode]:
 
         for link_text, link_url in links:
             parts = remaining_text.split(f"[{link_text}]({link_url})", 1)
-            new_nodes.append(TextNode(parts[0], TextType.text))
+            if parts[0] :
+                new_nodes.append(TextNode(parts[0], TextType.text))
+
             new_nodes.append(TextNode(f"{link_text}", TextType.link, f"{link_url}"))
-            if len(parts) > 1:
-                remaining_text = parts[1]
+            remaining_text = parts[1]
+
+        if remaining_text:
+            new_nodes.append(TextNode(remaining_text, TextType.text))
     return new_nodes
 
 # convert a raw string of markdown text into a list of TextNode objects
 # example : "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
 # -> [TextNode("this is ", TextNode.text), TextNode("text", TextType.bold), ...]
-def text_to_textnode(text) :
-    pass
+def text_to_textnode(text) -> list[TextNode] :
+    nodes = [TextNode(text, TextType.text)]
+    nodes = split_nodes_delimiter(nodes, "**", TextType.bold)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.italic)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.code)
+    nodes = split_nodes_image(nodes)
+    nodes = split_nodes_links(nodes)
+
+    print(nodes)
+    return nodes

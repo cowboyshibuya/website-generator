@@ -1,29 +1,28 @@
 
 import unittest
 
-from lib import extract_markdown_links, split_nodes_delimiter,extract_markdown_image, split_nodes_image, split_nodes_links
+from lib import extract_markdown_links, split_nodes_delimiter,extract_markdown_image, split_nodes_image, split_nodes_links, text_to_textnode
 from textnode import TextNode, TextType
 
-# i don't know why it's failing now
-# class TestSplitNodeDelimiter(unittest.TestCase):
-#     def test_split_node_bold(self):
-#         node = TextNode("This is the best **day** of my life", TextType.text)
-#         new_nodes = split_nodes_delimiter([node], "**", TextType.bold)
-#         # print("response : ", new_nodes)
-#         self.assertEqual(new_nodes, [
-#             TextNode("This is the best ", TextType.text, None),
-#             TextNode("day", TextType.bold, None),
-#             TextNode(" of my life", TextType.text, None),
-#         ])
+class TestSplitNodeDelimiter(unittest.TestCase):
+    def test_split_node_bold(self):
+        node = TextNode("This is the best **day** of my life", TextType.text)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.bold)
+        # print("response : ", new_nodes)
+        self.assertEqual(new_nodes, [
+            TextNode("This is the best ", TextType.text, None),
+            TextNode("day", TextType.bold, None),
+            TextNode(" of my life", TextType.text, None),
+        ])
 
-#     def test_split_node_code(self):
-#         node = TextNode("This is a `python code` here", TextType.text)
-#         new_nodes = split_nodes_delimiter([node], "`", TextType.code)
-#         self.assertEqual(new_nodes, [
-#             TextNode("This is a ", TextType.text, None),
-#             TextNode("python code", TextType.code, None),
-#             TextNode(" here", TextType.text, None),
-#         ])
+    def test_split_node_code(self):
+        node = TextNode("This is a `python code` here", TextType.text)
+        new_nodes = split_nodes_delimiter([node], "`", TextType.code)
+        self.assertEqual(new_nodes, [
+            TextNode("This is a ", TextType.text, None),
+            TextNode("python code", TextType.code, None),
+            TextNode(" here", TextType.text, None),
+        ])
 
 class TestExtractMarkdownImage(unittest.TestCase):
     def test_extract_markdown_images(self):
@@ -92,3 +91,20 @@ class TextSplitNodesImage(unittest.TestCase):
             [node],
             split_nodes_image([node])
         )
+
+
+class TestTextToTextNode(unittest.TestCase):
+    def test_bold_code_textnodes(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        self.assertListEqual([
+            TextNode("This is ", TextType.text),
+            TextNode("text", TextType.bold),
+            TextNode(" with an ", TextType.text),
+            TextNode("italic", TextType.italic),
+            TextNode(" word and a ", TextType.text),
+            TextNode("code block", TextType.code),
+            TextNode(" and an ", TextType.text),
+            TextNode("obi wan image", TextType.image, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.text),
+            TextNode("link", TextType.link, "https://boot.dev"),
+        ], text_to_textnode(text))
