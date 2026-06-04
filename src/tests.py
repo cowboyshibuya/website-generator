@@ -1,7 +1,8 @@
 
+import textwrap
 import unittest
 
-from lib import extract_markdown_links, split_nodes_delimiter,extract_markdown_image, split_nodes_image, split_nodes_links, text_to_textnode
+from lib import extract_markdown_links, markdown_to_blocks, split_nodes_delimiter,extract_markdown_image, split_nodes_image, split_nodes_links, text_to_textnode
 from textnode import TextNode, TextType
 
 class TestSplitNodeDelimiter(unittest.TestCase):
@@ -108,3 +109,25 @@ class TestTextToTextNode(unittest.TestCase):
             TextNode(" and a ", TextType.text),
             TextNode("link", TextType.link, "https://boot.dev"),
         ], text_to_textnode(text))
+
+class TestMarkdownToBlock(unittest.TestCase):
+    def test_markdown_to_blocks(self):
+        md = textwrap.dedent("""
+        This is **bolded** paragraph
+
+        This is another paragraph with _italic_ text and `code` here
+        This is the same paragraph on a new line
+
+        - This is a list
+        - with items
+        """)
+
+        blocks = markdown_to_blocks(md)
+        self.assertEqual(
+            blocks,
+            [
+                "This is **bolded** paragraph",
+                "This is another paragraph with _italic_ text and `code` here\nThis is the same paragraph on a new line",
+                "- This is a list\n- with items",
+            ],
+        )

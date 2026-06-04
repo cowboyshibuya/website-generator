@@ -1,5 +1,4 @@
 
-# convert a TextNode to an HTMLNode (specifically a LeafNode)
 from leafnode import LeafNode
 from textnode import TextNode, TextType
 import re
@@ -138,5 +137,22 @@ def text_to_textnode(text) -> list[TextNode] :
     nodes = split_nodes_image(nodes)
     nodes = split_nodes_links(nodes)
 
-    print(nodes)
+    #print(nodes)
     return nodes
+
+# takes a raw Makrdown string as input and returns a list of blocks string
+def markdown_to_blocks(markdown):
+    blocks = []
+    # split string into blocks based on double newline
+    parts = markdown.split("\n\n")
+
+    for part in parts :
+        if(part and len(part) > 0) :
+            #print(part)
+            # strip leading or trailing whitespace from each block
+            cleaned_part = part.strip(" ")
+            #print("cleaned : ", cleaned_part)
+            blocks.append(cleaned_part.strip())
+
+    #print("blocks :", blocks)
+    return blocks
