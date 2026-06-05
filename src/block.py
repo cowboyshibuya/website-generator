@@ -11,7 +11,7 @@ class BlockType(Enum):
 # takes a block and returns a Block Type
 def block_to_block_type(block : str) -> BlockType :
 
-    print("block : ", block)
+    # print("block : ", block)
     # HEADING: check if starts with 1-6 "#" followed by a white space
     if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")) :
         return BlockType.HEADING

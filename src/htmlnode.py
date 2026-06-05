@@ -12,7 +12,13 @@ class HTMLNode:
         self.props = props # dict of key-value representing the attributes of the HTML tag ("href : ...", etc.)
 
     def to_html(self):
-        raise NotImplementedError()
+        if self.value is None:
+            raise ValueError("No value")
+        if self.props is None :
+            return ""
+        if self.tag is None:
+            return self.value
+        return f'<{self.tag}>{self.value}</{self.tag}>'
 
     # convert props to html. for example :
         # { "href" : "https://www.google.com", "target" : "_blank"}
