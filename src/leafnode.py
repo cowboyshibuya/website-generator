@@ -1,4 +1,4 @@
-from src.htmlnode import HTMLNode
+from htmlnode import HTMLNode
 
 # a leaf is a HTMLNode class that represents a single HTML tag with no children.
 # for example : <p>Hello World</p> is a leaf.
