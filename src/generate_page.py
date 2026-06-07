@@ -5,41 +5,34 @@ import pathlib
 from block_markdown import markdown_to_html_node
 from inline_markdown import extract_title
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     if not from_path or not dest_path:
         raise Exception("incorrect paths")
 
-    # should print a message like "Generating page from ... to ... using ... template"
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
 
-    # read md file at from_path and store the contents in a variable
     md_content = ""
     if os.path.exists(from_path) and os.path.isfile(from_path):
         with open(from_path, 'r') as file:
             md_content = file.read()
-            #print("content : ", md_content)
 
-    # Read the template file at template_path and store the contents in a variable.
     template_content = ""
     if os.path.exists(template_path) and os.path.isfile(template_path):
         with open(template_path, 'r') as file:
             template_content = file.read()
-            #print("template content :", template_content)
 
-
-    # Use your markdown_to_html_node function and .to_html() method to convert the markdown file to an HTML string.
     html = markdown_to_html_node(md_content).to_html()
 
-    # Use the extract_title function to grab the title of the page.
     title = extract_title(md_content)
 
-    # Replace the {{ Title }} and {{ Content }} placeholders in the template with the HTML and title you generated.
     page = template_content.replace("{{ Title }}", title, 1)
     page = page.replace("{{ Content }}", html)
-    #replaced_template_title = template_content.replace("{{ Title }}", title, 1)
-    #replaced_template_content = replaced_template_title.replace("{{ Content }}", html)
 
-    # Write the new full HTML page to a file at dest_path. Be sure to create any necessary directories if they don't exist.
+    if not basepath.endswith("/"):
+        basepath += "/"
+    page = page.replace('href="/', f'href="{basepath}')
+    page = page.replace('src="/', f'src="{basepath}')
+
     dest_dir = os.path.dirname(dest_path)
 
     if dest_dir :
@@ -48,7 +41,7 @@ def generate_page(from_path, template_path, dest_path):
     with open(dest_path, "w", encoding="utf-8") as file:
         file.write(page)
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, root_path=None):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath, root_path=None):
     if not dir_path_content:
         raise Exception("no dir path content")
 
@@ -56,15 +49,16 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, roo
         root_path = dir_path_content
     # crawl every entry in the content directory
     files = os.listdir(dir_path_content)
+
     for file in files:
         # for each markdown file found, generate a new .html file using the same template.html
         print("files : ", files)
         filepath = os.path.join(dir_path_content, file)
-        print("file path :", filepath)
+        #print("file path :", filepath)
 
         if os.path.isdir(filepath):
             print(f"{file} is a directory")
-            generate_pages_recursive(filepath, template_path, dest_dir_path, root_path)
+            generate_pages_recursive(filepath, template_path, dest_dir_path, basepath, root_path)
             continue
 
         if os.path.isfile(filepath):
@@ -76,7 +70,7 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, roo
                 rel_filepath = os.path.relpath(filepath, root_path)
                 destination_path = os.path.join(dest_dir_path, rel_filepath)
                 destination_path = destination_path.replace(".md", ".html")
-                generate_page(filepath, template_path, destination_path)
+                generate_page(filepath, template_path, destination_path, basepath)
                 continue
                 # path_parts = filepath.split(dir_path_content)
                 # print("path parts : ", path_parts)
