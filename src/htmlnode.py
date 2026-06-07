@@ -24,9 +24,8 @@ class HTMLNode:
         # { "href" : "https://www.google.com", "target" : "_blank"}
         # will return -> href="https://www.google.com" target="_blank"
     def props_to_html(self):
-        # return " ".join(map(str,self.props.values()))
         return " ".join(
-            f'{key}="{value}"'
+            f' {key}="{value}"'
             for key, value in self.props.items()
         )
 

@@ -15,8 +15,8 @@ def cp_source_to_destination(source, destination):
 
     if not os.path.exists(destination):
         os.mkdir(destination)
-    print("Inside source : ", os.listdir(source))
-    print("inside destination :", os.listdir(destination))
+    #print("Inside source : ", os.listdir(source))
+    #print("inside destination :", os.listdir(destination))
 
     if len(os.listdir(destination)) > 0:
         shutil.rmtree(destination)

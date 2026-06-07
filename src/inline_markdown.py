@@ -13,6 +13,16 @@ def extract_markdown_image(text) :
 def extract_markdown_links(text):
     return re.findall(r"\[(.*?)\]\((.*?)\)", text)
 
+# should pull the h1 header from the markdown file and return it
+# extract_title("# Hello") should return "Hello"
+def extract_title(markdown):
+    # ensure we get the first line if contains multi-line
+    first_line = markdown.split("\n", 1)[0]
+    if not markdown.startswith("# "):
+        raise Exception("incorrect title")
+
+    return first_line.lstrip("# ").rstrip(" ")
+
 # it takes a node list, a delimiter and a text type.
 # it should return a new list of nodes, where any "text" type nodes in the input list are (potentially) split into multiple nodes based on the syntax.
 # for example:

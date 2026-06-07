@@ -1,8 +1,10 @@
+import textwrap
 import unittest
 
 from inline_markdown import (
     extract_markdown_image,
     extract_markdown_links,
+    extract_title,
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_links,
@@ -115,6 +117,21 @@ class TestTextToTextNode(unittest.TestCase):
             TextNode("link", TextType.link, "https://boot.dev"),
         ], text_to_textnode(text))
 
+class TestExtractTitle(unittest.TestCase):
+    def test_extract_correct_h1(self):
+        text = "# Hello World"
+        self.assertEqual("Hello World", extract_title(text))
+
+    def test_extract_h1_with_spaces(self):
+        text = "# Hello World       "
+        self.assertEqual("Hello World", extract_title(text))
+
+    def test_extract_h1_multilines(self):
+        text = textwrap.dedent("""# Hello World
+            ![ksjf](images.com)
+            This is wonderful
+        """)
+        self.assertEqual("Hello World", extract_title(text))
 
 if __name__ == "__main__":
     unittest.main()
